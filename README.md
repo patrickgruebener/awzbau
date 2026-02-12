@@ -25,7 +25,7 @@ docker-compose up -d
 3. WordPress öffnen:
    - Frontend: http://localhost:8080
    - Admin: http://localhost:8080/wp-admin
-   - phpMyAdmin: http://localhost:8081
+   - phpMyAdmin: http://localhost:8085
    - Login: siehe Passwort Manager
 
 4. Bei Änderungen automatisch sichtbar (Docker Volume Mounts)

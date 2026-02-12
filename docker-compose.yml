@@ -3,6 +3,7 @@ services:
     image: mysql:8.0
     container_name: awz-db
     restart: unless-stopped
+    command: --sql_mode="NO_ENGINE_SUBSTITUTION"
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: wordpress
