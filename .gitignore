@@ -1,0 +1,44 @@
+# Ignore everything by default
+/*
+/*/
+
+# Allow specific project files
+!.gitignore
+!README.md
+!docker-compose.yml
+!/wp-content/
+
+# Ignore everything in wp-content
+/wp-content/*
+/wp-content/*/
+
+# Allow custom theme
+!/wp-content/themes/
+/wp-content/themes/*
+!/wp-content/themes/vantage-childtheme/
+
+# Allow custom plugins folder (but empty for now)
+!/wp-content/plugins/
+/wp-content/plugins/*
+
+# Ignore uploads and cache
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backup*/
+
+# Ignore logs and system files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Ignore sensitive config
+wp-config.php
+.htaccess
+
+# Allow structure folders
+!/docs/
+!/database/
+/database/*
+!/database/.gitkeep
