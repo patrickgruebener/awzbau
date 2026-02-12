@@ -5,6 +5,7 @@
 # Allow specific project files
 !.gitignore
 !README.md
+!SETUP.md
 !docker-compose.yml
 !/wp-content/
 
