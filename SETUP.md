@@ -151,6 +151,25 @@ Lösung:
 2. WordPress Cache löschen (WP Super Cache Plugin)
 3. Docker Container neu starten
 
+### Plugin-CSS Overrides greifen nicht
+
+Problem: CSS in `style.css` hat keine Wirkung auf Plugin-Elemente (z.B. STEC Event Calendar).
+
+Ursache: Manche Plugins (z.B. STEC) generieren Inline-`<style>`-Blöcke via PHP, die nach dem Theme-CSS geladen werden und es überschreiben.
+
+Lösung: CSS-Overrides in `functions.php` via `wp_head` mit hoher Priorität einbinden:
+```php
+add_action('wp_head', function () {
+    ?>
+    <style>
+        /* Plugin CSS Override */
+        body .plugin-selector { color: #639582 !important; }
+    </style>
+    <?php
+}, 999);
+```
+Priorität 999 stellt sicher, dass die Styles nach allen Plugin-Styles geladen werden.
+
 ## Datenbank Sync
 
 ### Von Live zu Lokal
