@@ -42,6 +42,22 @@ git diff --name-only
 # Diese Dateien via FTP hochladen
 ```
 
+## Plugin Updates
+
+### STEC (Stachethemes Event Calendar)
+
+Plugin-Update geht nicht per FTP-Ersatz alleine. Reihenfolge:
+
+1. Altes Plugin via WP-Admin deaktivieren
+2. Neues Plugin als ZIP hochladen (Plugins → Installieren → Plugin hochladen) oder via FTP ersetzen
+3. Plugin aktivieren
+4. **STEC Dashboard → Migrate** ausführen (Datenbankstruktur updaten)
+5. **STEC Dashboard → Settings → Pages** → Event-URL-Slug auf `lehrgang` setzen
+6. **Einstellungen → Permalinks** → Speichern (flusht Rewrite Rules)
+7. Lizenz aktivieren falls nötig
+
+Falls ZIP-Upload fehlschlägt ("Installationspaket nicht verfügbar"): FTP verwenden.
+
 ## Post-Deployment
 
 - [ ] Live Site testen: www.awz-bau.de

@@ -151,24 +151,58 @@ Lösung:
 2. WordPress Cache löschen (WP Super Cache Plugin)
 3. Docker Container neu starten
 
+### STEC Plugin Update (v3 → v5)
+
+STEC v5 ist ein kompletter Rewrite (React statt jQuery). Bei einem Update sind folgende Schritte nötig:
+
+1. **Lokal testen zuerst** — niemals direkt live updaten
+2. **Plugin-Hauptdatei hat sich geändert:** `stachethemes_event_calendar.php` → `stec.php`. WordPress erkennt das als anderes Plugin. Deshalb nach dem Upload: Plugin im WP-Admin deaktivieren und neu aktivieren.
+3. **Migration ausführen:** STEC Dashboard → Migrate (einmalig pro Datenbank — lokal UND live)
+4. **Event-URL-Slug setzen:** STEC Dashboard → Settings → Pages → "Events page slug" → `lehrgang`
+5. **Rewrite Rules flushen:** Einstellungen → Permalinks → Speichern
+6. **Lizenz aktivieren:** STEC Dashboard → Activator → License Key eintragen
+
+**Shortcode hat sich geändert:** `[stachethemes_ec]` → `[stec]`. Alle Seiten mit dem alten Shortcode anpassen.
+
+**Rollback möglich:** Backup des alten Plugins liegt unter `/Users/patrick/Documents/Freelance/AWZ/Website/stachethemes_event_calendar_v3.2.4_backup/`. Alte Events bleiben in der DB (Status `stec_legacy`), werden von v3 direkt wieder gelesen.
+
+**Plugin-Upload via ZIP:** Funktioniert über WP-Admin → Plugins → Installieren → Plugin hochladen. Falls "Installationspaket nicht verfügbar": FTP verwenden.
+
+### STEC v5: DB-Option für Event-Slug
+
+v5 liest den Event-Slug aus der Option `stec_settings` (JSON/serialized). Falls die Option nicht existiert, greift der Default `stec_event`. Entweder im STEC-Dashboard setzen oder per PHP:
+
+```php
+// In functions.php: Fallback falls stec_settings-Option nicht gesetzt
+add_filter('stec_default_settings', function ($settings) {
+    $settings['pages']['events_page_slug'] = 'lehrgang';
+    return $settings;
+});
+```
+
+**Wichtig:** Dieser Filter greift nur wenn keine `stec_settings` DB-Option existiert. Sobald die Option in der DB gespeichert ist, überschreibt sie den Filter.
+
 ### Plugin-CSS Overrides greifen nicht
 
 Problem: CSS in `style.css` hat keine Wirkung auf Plugin-Elemente (z.B. STEC Event Calendar).
 
 Ursache: Manche Plugins (z.B. STEC) generieren Inline-`<style>`-Blöcke via PHP, die nach dem Theme-CSS geladen werden und es überschreiben.
 
-Lösung: CSS-Overrides in `functions.php` via `wp_head` mit hoher Priorität einbinden:
+**STEC v3:** Spezifische Selektoren via `wp_head` mit Priorität 999.
+
+**STEC v5:** CSS Custom Properties nutzen — deutlich sauberer:
 ```php
 add_action('wp_head', function () {
     ?>
     <style>
-        /* Plugin CSS Override */
-        body .plugin-selector { color: #639582 !important; }
+        .stec {
+            --stec-top-menu-bg-active-primary: #639582;
+            --stec-top-menu-bg-active-secondary: #527a6b;
+        }
     </style>
     <?php
 }, 999);
 ```
-Priorität 999 stellt sicher, dass die Styles nach allen Plugin-Styles geladen werden.
 
 ## Datenbank Sync
 
