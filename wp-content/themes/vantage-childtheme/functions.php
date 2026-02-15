@@ -8,10 +8,24 @@ function vantage_child_enqueue_parent_style() {
 add_action( 'wp_enqueue_scripts', 'vantage_child_enqueue_parent_style', 8 );
 
 /**
+ * Load child theme STEC helper modules.
+ */
+$awz_stec_i18n_fallback = get_stylesheet_directory() . '/inc/stec-i18n-fallback.php';
+if ( file_exists( $awz_stec_i18n_fallback ) ) {
+	require_once $awz_stec_i18n_fallback;
+}
+
+$awz_stec_booking_repair = get_stylesheet_directory() . '/inc/stec-booking-repair.php';
+if ( file_exists( $awz_stec_booking_repair ) ) {
+	require_once $awz_stec_booking_repair;
+}
+
+/**
  * STEC v5: Open events on their single page instead of inline.
  */
 add_filter('stec_shortcode_atts', function ($atts) {
-    $atts['calendar__open_events_in'] = '_self';
+    $atts['calendar__open_events_in'] = 'single';
+    $atts['calendar__links_target'] = '_self';
     return $atts;
 });
 
@@ -22,6 +36,26 @@ add_filter('stec_default_settings', function ($settings) {
     $settings['pages']['events_page_slug'] = 'lehrgang';
     return $settings;
 });
+
+/**
+ * STEC ticket CTA label on event pages.
+ */
+add_filter(
+	'gettext',
+	function ( $translation, $text, $domain ) {
+		if ( 'stec' !== $domain ) {
+			return $translation;
+		}
+
+		if ( 'Add to cart' === $text ) {
+			return 'Buchen';
+		}
+
+		return $translation;
+	},
+	20,
+	3
+);
 
 function vantage_child_alter_page_setting_defaults( $defaults, $type, $id ) {
 	$defaults['layout'] = 'no-sidebar';
@@ -55,16 +89,44 @@ add_filter( 'woocommerce_cart_item_name', 'sv_remove_cart_product_link', 10, 3 )
 add_filter( 'woocommerce_order_item_permalink', '__return_false' );
 
 /**
- * Override STEC v5 calendar accent colors with site primary green.
- * Uses CSS custom properties instead of v3 selector overrides.
+ * Load legacy-aligned STEC styles.
  */
-add_action('wp_head', function () {
-    ?>
-    <style>
-        .stec {
-            --stec-top-menu-bg-active-primary: #639582;
-            --stec-top-menu-bg-active-secondary: #527a6b;
-        }
-    </style>
-    <?php
-}, 999);
+function awz_stec_enqueue_legacy_styles() {
+	$style_path = get_stylesheet_directory() . '/assets/css/stec-single-legacy.css';
+
+	if ( ! file_exists( $style_path ) ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'awz-stec-single-legacy',
+		get_stylesheet_directory_uri() . '/assets/css/stec-single-legacy.css',
+		array( 'vantage-parent-style' ),
+		filemtime( $style_path )
+	);
+}
+add_action( 'wp_enqueue_scripts', 'awz_stec_enqueue_legacy_styles', 20 );
+
+/**
+ * Load STEC single-page tab overrides.
+ */
+function awz_stec_enqueue_single_tab_overrides() {
+	if ( ! is_singular( 'stec_event' ) ) {
+		return;
+	}
+
+	$script_path = get_stylesheet_directory() . '/assets/js/stec-single-tabs.js';
+
+	if ( ! file_exists( $script_path ) ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'awz-stec-single-tabs',
+		get_stylesheet_directory_uri() . '/assets/js/stec-single-tabs.js',
+		array(),
+		filemtime( $script_path ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'awz_stec_enqueue_single_tab_overrides', 25 );
