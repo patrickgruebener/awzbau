@@ -57,6 +57,65 @@ add_filter(
 	3
 );
 
+/**
+ * German fallback labels for WooCommerce checkout/thankyou pages.
+ */
+function awz_wc_booking_gettext_fallback_de( $translation, $text, $domain ) {
+	if ( 'woocommerce' !== $domain ) {
+		return $translation;
+	}
+
+	static $map = array(
+		'Thank you. Your order has been received.' => 'Vielen Dank. Deine Bestellung ist eingegangen.',
+		'Order details'                            => 'Bestelldetails',
+		'Order received'                           => 'Bestellung eingegangen',
+		'Billing address'                          => 'Rechnungsadresse',
+		'Shipping address'                         => 'Lieferadresse',
+		'Billing details'                          => 'Rechnungsdetails',
+		'Your order'                               => 'Deine Bestellung',
+		'Place order'                              => 'Zahlungspflichtig buchen',
+		'Proceed to checkout'                      => 'Zur Kasse',
+		'Product'                                  => 'Produkt',
+		'Total'                                    => 'Gesamt',
+		'Subtotal:'                                => 'Zwischensumme:',
+		'Payment method:'                          => 'Zahlungsart:',
+		'Payment method'                           => 'Zahlungsart',
+		'ORDER NUMBER:'                            => 'BESTELLNUMMER:',
+		'DATE:'                                    => 'DATUM:',
+		'EMAIL:'                                   => 'E-MAIL:',
+		'TOTAL:'                                   => 'GESAMT:',
+		'PAYMENT METHOD:'                          => 'ZAHLUNGSART:',
+	);
+
+	if ( isset( $map[ $text ] ) ) {
+		return $map[ $text ];
+	}
+
+	return $translation;
+}
+add_filter( 'gettext', 'awz_wc_booking_gettext_fallback_de', 20, 3 );
+
+/**
+ * Disable STEC QR-code generation globally.
+ */
+add_filter( 'stec_qrcode_disabled', '__return_true', 99 );
+
+/**
+ * Remove STEC QR rendering from order details and emails.
+ */
+function awz_disable_stec_order_qr_output() {
+	if ( ! class_exists( 'Stachethemes\\Stec\\Booking' ) ) {
+		return;
+	}
+
+	$booking_class = 'Stachethemes\\Stec\\Booking';
+
+	remove_action( 'woocommerce_order_details_after_order_table', array( $booking_class, 'filter_add_order_qrcode' ), 10 );
+	remove_action( 'woocommerce_email_after_order_table', array( $booking_class, 'filter_add_order_qrcode' ), 10 );
+	remove_filter( 'woocommerce_display_item_meta', array( $booking_class, 'filter_add_order_item_qrcode' ), 10 );
+}
+add_action( 'plugins_loaded', 'awz_disable_stec_order_qr_output', 20 );
+
 function vantage_child_alter_page_setting_defaults( $defaults, $type, $id ) {
 	$defaults['layout'] = 'no-sidebar';
 
