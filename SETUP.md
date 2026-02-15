@@ -182,6 +182,35 @@ add_filter('stec_default_settings', function ($settings) {
 
 **Wichtig:** Dieser Filter greift nur wenn keine `stec_settings` DB-Option existiert. Sobald die Option in der DB gespeichert ist, überschreibt sie den Filter.
 
+### STEC v5: Kalender zeigt "Keine Veranstaltungen gefunden"
+
+Problem: Kalender rendert (Agenda-View sichtbar), REST API `/wp-json/stec/v5/events` liefert Daten, aber Frontend zeigt nichts.
+
+Ursache: STEC v5 filtert REST API Queries mit `lang=de` (aus WP-Locale). Migrierte v3-Events haben kein `lang`-Meta → alle werden herausgefiltert.
+
+Debug: Im Browser-Netzwerk-Tab prüfen ob der `events/?...&lang=de` Request leer zurückkommt.
+
+Lösung:
+```sql
+-- Alle stec_event / stec_calendar Posts
+INSERT INTO wp_postmeta (post_id, meta_key, meta_value)
+SELECT p.ID, 'lang', 'de'
+FROM wp_posts p
+LEFT JOIN wp_postmeta pm ON pm.post_id = p.ID AND pm.meta_key = 'lang'
+WHERE p.post_type IN ('stec_event', 'stec_calendar')
+AND p.post_status = 'publish'
+AND pm.meta_id IS NULL;
+
+-- Kalender-Term (Term-ID aus /wp-json/stec/v5/calendars auslesen)
+INSERT INTO wp_termmeta (term_id, meta_key, meta_value)
+SELECT [TERM_ID], 'lang', 'de'
+WHERE NOT EXISTS (
+    SELECT 1 FROM wp_termmeta WHERE term_id = [TERM_ID] AND meta_key = 'lang'
+);
+```
+
+Hinweis: Gilt für jede neue Datenbank (lokal UND live) nach der v3→v5 Migration.
+
 ### Plugin-CSS Overrides greifen nicht
 
 Problem: CSS in `style.css` hat keine Wirkung auf Plugin-Elemente (z.B. STEC Event Calendar).
