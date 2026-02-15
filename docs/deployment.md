@@ -1,5 +1,19 @@
 # Deployment Workflow
 
+## Aktueller STEC Hotfix-Stand
+
+Vor naechstem Deployment bitte diese Handover-Doku lesen:
+
+- `docs/stec-booking-handover-2026-02-15.md`
+
+Sie enthaelt:
+- komplette Fehlerhistorie
+- konkrete Code-Aenderungen
+- committen Stand (`4daf5c2`)
+- exakte FTP-Dateiliste
+- notwendige DB-Normalisierung fuer `stec_stop_before`
+- Live-Testcheckliste fuer Buchungen
+
 ## Server Info
 
 - **Host:** itbs2.it-schlabach.de
@@ -65,6 +79,8 @@ Falls ZIP-Upload fehlschlägt ("Installationspaket nicht verfügbar"): FTP verwe
 - [ ] Browser Cache clearen (Cmd+Shift+R)
 - [ ] WordPress Cache clearen (WP Super Cache Plugin)
 - [ ] Error Logs prüfen (via phpMyAdmin oder FTP: `/wp-content/debug.log`)
+- [ ] **Kalender-Shortcode prüfen:** Seiten mit STEC-Kalender müssen `[stec]` verwenden (nicht `[stachethemes_ec]`)
+- [ ] **AWZ STEC Repair Tool** ausführen falls Events nicht sichtbar: `/wp-admin/tools.php?page=awz-stec-repair` → Ticket-Flags Apply → Titel-Matching Apply
 
 ## Rollback
 
