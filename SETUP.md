@@ -211,6 +211,33 @@ WHERE NOT EXISTS (
 
 Hinweis: Gilt für jede neue Datenbank (lokal UND live) nach der v3→v5 Migration.
 
+### Event-Slugs weichen nach Migration zwischen Local und Live ab
+
+Problem: Lokale Event-URLs funktionieren, live gibt es leere Seiten oder 404. Oder umgekehrt.
+
+Ursache: Die STEC-Migration (v3 → v5) oder manuelle Bearbeitung der Events auf einem System kann die `post_name`-Felder unterschiedlich setzen. Local und Live haben dann verschiedene Slugs für dieselben Events (z.B. lokal `meisterpruefung-teil-4`, live `meisterlehrgang-teil-iv-ausbildereignungspruefung-nach-der-aevo`).
+
+**Diagnose:**
+```sql
+SELECT ID, post_name, post_title
+FROM wp_posts
+WHERE post_type = 'stec_event' AND post_status = 'publish'
+ORDER BY post_title;
+```
+Auf beiden Systemen laufen lassen und vergleichen.
+
+**Fix – Slugs direkt per SQL korrigieren:**
+```sql
+-- Sicher: post_name ist ein einfacher String, keine serialisierten Daten
+UPDATE wp_posts SET post_name = 'gewuenschter-slug' WHERE ID = [ID];
+```
+
+Danach Rewrite Rules flushen: WP-Admin → Einstellungen → Permalinks → Speichern.
+
+**Hinweis:** phpMyAdmin akzeptiert mehrere UPDATE-Statements auf einmal (durch `;` getrennt) im SQL-Tab.
+
+**Vorsicht Tabellenprefix:** Live-Site nutzt `wp_posts`. Die `wpstg0_posts`-Tabellen im selben phpMyAdmin sind Staging-Tabellen vom All-in-One WP Migration Plugin, nicht die Produktionsdaten.
+
 ### Plugin-CSS Overrides greifen nicht
 
 Problem: CSS in `style.css` hat keine Wirkung auf Plugin-Elemente (z.B. STEC Event Calendar).
