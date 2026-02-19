@@ -21,6 +21,10 @@
 # Allow custom plugins folder (but empty for now)
 !/wp-content/plugins/
 /wp-content/plugins/*
+!/wp-content/mu-plugins/
+/wp-content/mu-plugins/*
+!/wp-content/mu-plugins/awz-stec-performance.php
+!/wp-content/mu-plugins/awz-stec-i18n-loader-hotfix.php
 
 # Ignore uploads and cache
 wp-content/uploads/
@@ -40,6 +44,12 @@ wp-config.php
 
 # Allow structure folders
 !/docs/
+!/tests/
+/tests/*
+!/tests/manual/
+/tests/manual/*
+!/tests/manual/performance-calendar.md
+!/tests/manual/post-deployment.md
 !/database/
 /database/*
 !/database/.gitkeep

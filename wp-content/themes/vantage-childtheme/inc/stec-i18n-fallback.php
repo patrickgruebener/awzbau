@@ -3,6 +3,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! function_exists( 'awz_stec_i18n_should_run' ) ) {
+	/**
+	 * Scope STEC translation fallback to relevant frontend requests.
+	 *
+	 * @param string $domain Translation domain.
+	 * @param string $handle Script handle.
+	 * @return bool
+	 */
+	function awz_stec_i18n_should_run( $domain, $handle ) {
+		if ( 'stec' !== $domain ) {
+			return false;
+		}
+
+		if ( function_exists( 'awz_is_stec_handle' ) ) {
+			if ( ! awz_is_stec_handle( $handle ) ) {
+				return false;
+			}
+		} elseif ( ! is_string( $handle ) || ( 'stec' !== $handle && 0 !== strpos( $handle, 'stec-' ) ) ) {
+			return false;
+		}
+
+		if ( function_exists( 'awz_is_frontend_non_admin_request' ) ) {
+			if ( ! awz_is_frontend_non_admin_request() ) {
+				return false;
+			}
+		} elseif ( is_admin() && ! wp_doing_ajax() ) {
+			return false;
+		}
+
+		if ( function_exists( 'awz_is_stec_frontend_context' ) && ! awz_is_stec_frontend_context() ) {
+			return false;
+		}
+
+		return true;
+	}
+}
+
 if ( ! function_exists( 'awz_stec_i18n_get_plural_forms' ) ) {
 	/**
 	 * Resolve plural forms header from loaded translations.
@@ -61,7 +98,7 @@ if ( ! function_exists( 'awz_stec_pre_load_script_translations' ) ) {
 	 * @return string|false|null
 	 */
 	function awz_stec_pre_load_script_translations( $translations, $file, $handle, $domain ) {
-		if ( null !== $translations || 'stec' !== $domain ) {
+		if ( null !== $translations || ! awz_stec_i18n_should_run( $domain, $handle ) ) {
 			return $translations;
 		}
 

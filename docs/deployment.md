@@ -1,25 +1,27 @@
 # Deployment Workflow
 
-## Aktueller Stand: Commit `7e3d7f4` (2026-02-19)
+## Aktueller Stand: STEC Performance + i18n Loader Fix (2026-02-19)
 
-Änderungen in diesem Stand (seit `3ec52df`):
-- WooCommerce Checkout: Billing-Felder optimiert (Bundesland weg, PLZ+Ort nebeneinander, Reihenfolge)
-- WooCommerce Checkout: Mengensteuerung + Remove-Button direkt in der Bestellübersicht
-- WooCommerce Checkout: Mobile Layout (Bestellung vor Formular auf kleinen Screens)
-- AJAX-Handler: Qty-Update und Item-Remove mit Nonce-Security
-- i18n: AGB, Datenschutzerklärung, "Additional information" übersetzt
+Änderungen in diesem Stand:
 
-**FTP hochladen:**
+1. Performance-Guards fuer `/weiterbildung` inkl. Event-REST-Cache.
+2. Child-Theme Translation-Guards eingegrenzt auf relevante Kontexte.
+3. Live-Hotfix fuer Jetpack i18n-loader:
+   - stoppt langsame `stec-de_DE-*.json` 404 Ketten auf STEC-Seiten.
+
+**FTP hochladen (dieser Stand):**
 ```
+wp-content/mu-plugins/awz-stec-performance.php
+wp-content/mu-plugins/awz-stec-i18n-loader-hotfix.php
 wp-content/themes/vantage-childtheme/functions.php
-wp-content/themes/vantage-childtheme/assets/css/stec-single-legacy.css
-wp-content/themes/vantage-childtheme/assets/js/wc-checkout-controls.js
-wp-content/themes/vantage-childtheme/woocommerce/checkout/review-order.php
+wp-content/themes/vantage-childtheme/inc/stec-i18n-fallback.php
 ```
 
-Hinweis: `woocommerce/checkout/` muss als neuer Ordner angelegt werden falls nicht vorhanden.
+Hinweise:
 
-**Kein DB-Fix nötig** – reine Code-Änderungen.
+1. Ordner `wp-content/mu-plugins/` muss auf Live existieren, sonst zuerst anlegen.
+2. Nach Upload immer Cache leeren (Plugin/CDN/Browser).
+3. Kein DB-Fix fuer diesen Stand erforderlich.
 
 ---
 
@@ -99,6 +101,7 @@ Falls ZIP-Upload fehlschlägt ("Installationspaket nicht verfügbar"): FTP verwe
 - [ ] WordPress Cache clearen (WP Super Cache Plugin)
 - [ ] Error Logs prüfen (via phpMyAdmin oder FTP: `/wp-content/debug.log`)
 - [ ] **Kalender-Shortcode prüfen:** Seiten mit STEC-Kalender müssen `[stec]` verwenden (nicht `[stachethemes_ec]`)
+- [ ] **Network Check:** Auf `/weiterbildung` und `/lehrgang/...` keine `stec-de_DE-*.json` 404 Requests
 - [ ] **AWZ STEC Repair Tool** ausführen falls Events nicht sichtbar: `/wp-admin/tools.php?page=awz-stec-repair` → Ticket-Flags Apply → Titel-Matching Apply
 
 ## Rollback
@@ -108,6 +111,10 @@ Falls etwas schief geht:
 **Option A: FTP Backup zurückkopieren**
 1. Backup Dateien von lokalem Backup-Ordner
 2. Via FTP hochladen und überschreiben
+
+**Option A.1: i18n Hotfix gezielt deaktivieren**
+1. `wp-content/mu-plugins/awz-stec-i18n-loader-hotfix.php` umbenennen oder entfernen
+2. Cache leeren und erneut testen
 
 **Option B: .wpress Backup importieren**
 1. All-in-One WP Migration auf Live-Site

@@ -20,6 +20,117 @@ if ( file_exists( $awz_stec_booking_repair ) ) {
 	require_once $awz_stec_booking_repair;
 }
 
+if ( ! function_exists( 'awz_is_frontend_non_admin_request' ) ) {
+	/**
+	 * Restrict expensive translation filters to frontend traffic.
+	 *
+	 * @return bool
+	 */
+	function awz_is_frontend_non_admin_request() {
+		return ! is_admin() || wp_doing_ajax();
+	}
+}
+
+if ( ! function_exists( 'awz_is_stec_handle' ) ) {
+	/**
+	 * Check if the script handle belongs to STEC.
+	 *
+	 * @param string $handle Script handle.
+	 * @return bool
+	 */
+	function awz_is_stec_handle( $handle ) {
+		return is_string( $handle ) && ( 'stec' === $handle || 0 === strpos( $handle, 'stec-' ) );
+	}
+}
+
+if ( ! function_exists( 'awz_is_stec_frontend_context' ) ) {
+	/**
+	 * Detect pages where STEC translation rewrites are needed.
+	 *
+	 * @return bool
+	 */
+	function awz_is_stec_frontend_context() {
+		static $is_context = null;
+		$can_cache = did_action( 'wp' ) > 0;
+
+		if ( $can_cache && null !== $is_context ) {
+			return $is_context;
+		}
+
+		if ( ! awz_is_frontend_non_admin_request() ) {
+			if ( $can_cache ) {
+				$is_context = false;
+			}
+			return false;
+		}
+
+		if ( function_exists( 'is_singular' ) && is_singular( 'stec_event' ) ) {
+			if ( $can_cache ) {
+				$is_context = true;
+			}
+			return true;
+		}
+
+		if ( function_exists( 'is_page' ) && is_page( 'weiterbildung' ) ) {
+			if ( $can_cache ) {
+				$is_context = true;
+			}
+			return true;
+		}
+
+		global $post;
+
+		$detected_context = (
+			$post instanceof WP_Post
+			&& (
+				has_shortcode( (string) $post->post_content, 'stec' )
+				|| has_shortcode( (string) $post->post_content, 'stachethemes_ec' )
+			)
+		);
+
+		if ( $can_cache ) {
+			$is_context = $detected_context;
+		}
+
+		return $detected_context;
+	}
+}
+
+if ( ! function_exists( 'awz_is_wc_booking_translation_context' ) ) {
+	/**
+	 * Restrict Woo translation fallback to checkout/order flow.
+	 *
+	 * @return bool
+	 */
+	function awz_is_wc_booking_translation_context() {
+		static $is_context = null;
+		$can_cache = did_action( 'wp' ) > 0;
+
+		if ( $can_cache && null !== $is_context ) {
+			return $is_context;
+		}
+
+		if ( ! awz_is_frontend_non_admin_request() ) {
+			if ( $can_cache ) {
+				$is_context = false;
+			}
+			return false;
+		}
+
+		$detected_context = (
+			( function_exists( 'is_checkout' ) && is_checkout() )
+			|| ( function_exists( 'is_order_received_page' ) && is_order_received_page() )
+			|| ( function_exists( 'is_wc_endpoint_url' ) && ( is_wc_endpoint_url( 'order-received' ) || is_wc_endpoint_url( 'view-order' ) ) )
+		);
+
+		if ( $can_cache ) {
+			$is_context = $detected_context;
+		}
+
+		return $detected_context;
+	}
+}
+
 /**
  * STEC v5: Open events on their single page instead of inline.
  */
@@ -49,6 +160,10 @@ add_filter(
 			return $translation;
 		}
 
+		if ( ! awz_is_stec_frontend_context() ) {
+			return $translation;
+		}
+
 		if ( 'Add to cart' === $text ) {
 			return 'Buchen';
 		}
@@ -69,6 +184,10 @@ add_filter(
  */
 function awz_wc_booking_gettext_fallback_de( $translation, $text, $domain ) {
 	if ( 'woocommerce' !== $domain ) {
+		return $translation;
+	}
+
+	if ( ! awz_is_wc_booking_translation_context() ) {
 		return $translation;
 	}
 
@@ -324,7 +443,11 @@ add_action( 'wp_footer', function () {
  * Override STEC "Add to cart" → "Buchen" in JS translations (React components).
  */
 add_filter( 'pre_load_script_translations', function ( $translations, $file, $handle, $domain ) {
-	if ( 'stec' !== $domain ) {
+	if ( 'stec' !== $domain || ! awz_is_frontend_non_admin_request() || ! awz_is_stec_handle( $handle ) ) {
+		return $translations;
+	}
+
+	if ( ! awz_is_stec_frontend_context() ) {
 		return $translations;
 	}
 
