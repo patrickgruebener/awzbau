@@ -554,6 +554,10 @@ if ( ! function_exists( 'awz_stec_booking_repair_fix_ticket_payload_meta' ) ) {
 		$meta_data = awz_stec_booking_repair_meta_data_append_default( $meta_data, 'stec_manage_per_order_limit', 0 );
 		$meta_data = awz_stec_booking_repair_meta_data_append_default( $meta_data, 'stec_per_order_limit', -1 );
 
+		// Force allow_inprogress=1 so umbrella events (start date in the past) don't
+		// block ticket sales for future course occurrences.
+		$meta_data = awz_stec_booking_repair_meta_data_set_value( $meta_data, 'stec_allow_inprogress', 1 );
+
 		$data['meta_data'] = $meta_data;
 		return $data;
 	}

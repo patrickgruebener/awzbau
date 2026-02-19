@@ -77,7 +77,7 @@
 }
 
 .single-stec_event .stec-single-page .stec-event-products-cart-and-checkout {
-    border-top-color: #d7dfdb;
+    display: none !important;
 }
 
 .single-stec_event .stec-single-page .stec-button {
