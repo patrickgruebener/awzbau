@@ -1,23 +1,35 @@
 # Deployment Workflow
 
-## Aktueller Stand: Commit `3ec52df` (2026-02-19)
+## Aktueller Stand: Commit `7e3d7f4` (2026-02-19)
 
-Änderungen in diesem Stand:
-- Skip-Cart: Direktweiterleitung zur Kasse nach "Buchen"-Klick
-- Button-Text "In den Warenkorb" → "Buchen"
-- Fehlermeldung "Ticketverkauf" → "Lehrgangsbuchung"
-- `stec_allow_inprogress` im REST-Payload forciert
+Änderungen in diesem Stand (seit `3ec52df`):
+- WooCommerce Checkout: Billing-Felder optimiert (Bundesland weg, PLZ+Ort nebeneinander, Reihenfolge)
+- WooCommerce Checkout: Mengensteuerung + Remove-Button direkt in der Bestellübersicht
+- WooCommerce Checkout: Mobile Layout (Bestellung vor Formular auf kleinen Screens)
+- AJAX-Handler: Qty-Update und Item-Remove mit Nonce-Security
+- i18n: AGB, Datenschutzerklärung, "Additional information" übersetzt
 
 **FTP hochladen:**
 ```
 wp-content/themes/vantage-childtheme/functions.php
 wp-content/themes/vantage-childtheme/assets/css/stec-single-legacy.css
-wp-content/themes/vantage-childtheme/inc/stec-booking-repair.php
+wp-content/themes/vantage-childtheme/assets/js/wc-checkout-controls.js
+wp-content/themes/vantage-childtheme/woocommerce/checkout/review-order.php
 ```
 
-**DB-Fix auf Live ausführen** (phpMyAdmin, 3 Statements nacheinander):
-`docs/fix-allow-inprogress-complete.sql`
-→ Abschließendes SELECT muss 0 Zeilen zurückgeben.
+Hinweis: `woocommerce/checkout/` muss als neuer Ordner angelegt werden falls nicht vorhanden.
+
+**Kein DB-Fix nötig** – reine Code-Änderungen.
+
+---
+
+## Stand `3ec52df` (2026-02-19) – bereits deployed
+
+- Skip-Cart: Direktweiterleitung zur Kasse nach "Buchen"-Klick
+- Button-Text "In den Warenkorb" → "Buchen"
+- Fehlermeldung "Ticketverkauf" → "Lehrgangsbuchung"
+- `stec_allow_inprogress` im REST-Payload forciert
+- DB-Fix `docs/fix-allow-inprogress-complete.sql` wurde auf Live ausgeführt
 
 Für Vorgeschichte der Booking-Bugs: `docs/stec-booking-handover-2026-02-15.md`
 
