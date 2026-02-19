@@ -92,6 +92,10 @@ function awz_wc_booking_gettext_fallback_de( $translation, $text, $domain ) {
 		'EMAIL:'                                   => 'E-MAIL:',
 		'TOTAL:'                                   => 'GESAMT:',
 		'PAYMENT METHOD:'                          => 'ZAHLUNGSART:',
+		'Additional information'                   => 'Zusätzliche Angaben',
+		'I have read and agree to the website %s'  => 'Ich habe die %s gelesen und stimme ihnen zu.',
+		'terms and conditions'                     => 'AGB',
+		'privacy policy'                           => 'Datenschutzerklärung',
 	);
 
 	if ( isset( $map[ $text ] ) ) {
@@ -153,6 +157,49 @@ add_filter( 'woocommerce_cart_item_name', 'sv_remove_cart_product_link', 10, 3 )
  *Links auf Produktseiten auf der Bestellbestätigung-Seite entfernen
   */
 add_filter( 'woocommerce_order_item_permalink', '__return_false' );
+
+/**
+ * Checkout billing fields: Bundesland entfernen, PLZ+Ort nebeneinander, Reihenfolge optimieren.
+ */
+add_filter( 'woocommerce_checkout_fields', function ( $fields ) {
+	// Bundesland entfernen.
+	unset( $fields['billing']['billing_state'] );
+
+	// Land ausblenden (AWZ ist Deutschland-only).
+	if ( isset( $fields['billing']['billing_country'] ) ) {
+		$fields['billing']['billing_country']['class']    = array( 'hidden' );
+		$fields['billing']['billing_country']['required'] = false;
+	}
+
+	// PLZ + Ort nebeneinander.
+	if ( isset( $fields['billing']['billing_postcode'] ) ) {
+		$fields['billing']['billing_postcode']['class'] = array( 'form-row-first' );
+	}
+	if ( isset( $fields['billing']['billing_city'] ) ) {
+		$fields['billing']['billing_city']['class'] = array( 'form-row-last' );
+	}
+
+	// Reihenfolge: E-Mail und Telefon nach oben, Adresse nach unten.
+	$order = array(
+		'billing_first_name' => 10,
+		'billing_last_name'  => 20,
+		'billing_email'      => 30,
+		'billing_phone'      => 40,
+		'billing_company'    => 50,
+		'billing_address_1'  => 60,
+		'billing_postcode'   => 70,
+		'billing_city'       => 80,
+		'billing_country'    => 90,
+	);
+	foreach ( $order as $field => $priority ) {
+		if ( isset( $fields['billing'][ $field ] ) ) {
+			$fields['billing'][ $field ]['priority'] = $priority;
+		}
+	}
+
+	return $fields;
+} );
+add_filter( 'default_checkout_billing_country', fn() => 'DE' );
 
 /**
  * Skip cart: redirect to checkout on STEC event pages (PHP fallback for non-AJAX).
@@ -355,3 +402,81 @@ function awz_stec_enqueue_single_tab_overrides() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'awz_stec_enqueue_single_tab_overrides', 25 );
+
+/**
+ * Checkout cart controls: enqueue script with nonce.
+ */
+function awz_wc_checkout_enqueue_scripts() {
+	if ( ! is_checkout() ) {
+		return;
+	}
+
+	$script_path = get_stylesheet_directory() . '/assets/js/wc-checkout-controls.js';
+	if ( ! file_exists( $script_path ) ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'awz-wc-checkout-controls',
+		get_stylesheet_directory_uri() . '/assets/js/wc-checkout-controls.js',
+		array( 'jquery' ),
+		filemtime( $script_path ),
+		true
+	);
+
+	wp_localize_script(
+		'awz-wc-checkout-controls',
+		'awzCheckout',
+		array(
+			'nonce'    => wp_create_nonce( 'awz-checkout-cart' ),
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'awz_wc_checkout_enqueue_scripts', 25 );
+
+/**
+ * AJAX: Menge im Warenkorb aktualisieren (Checkout).
+ */
+add_action( 'wp_ajax_awz_update_checkout_qty', 'awz_ajax_update_checkout_qty' );
+add_action( 'wp_ajax_nopriv_awz_update_checkout_qty', 'awz_ajax_update_checkout_qty' );
+function awz_ajax_update_checkout_qty() {
+	check_ajax_referer( 'awz-checkout-cart', 'security' );
+
+	$cart_item_key = sanitize_text_field( wp_unslash( $_POST['cart_item_key'] ?? '' ) );
+	$quantity      = absint( $_POST['quantity'] ?? 0 );
+
+	if ( ! $cart_item_key || $quantity < 1 ) {
+		wp_send_json_error( array( 'message' => 'Invalid input' ) );
+	}
+
+	WC()->cart->set_quantity( $cart_item_key, $quantity, true );
+	wp_send_json_success();
+}
+
+/**
+ * AJAX: Item aus Warenkorb entfernen (Checkout).
+ */
+add_action( 'wp_ajax_awz_remove_checkout_item', 'awz_ajax_remove_checkout_item' );
+add_action( 'wp_ajax_nopriv_awz_remove_checkout_item', 'awz_ajax_remove_checkout_item' );
+function awz_ajax_remove_checkout_item() {
+	check_ajax_referer( 'awz-checkout-cart', 'security' );
+
+	$cart_item_key = sanitize_text_field( wp_unslash( $_POST['cart_item_key'] ?? '' ) );
+	if ( ! $cart_item_key ) {
+		wp_send_json_error( array( 'message' => 'Invalid key' ) );
+	}
+
+	WC()->cart->remove_cart_item( $cart_item_key );
+
+	// Wenn Warenkorb leer: zurück zur Kursseite.
+	if ( WC()->cart->is_empty() ) {
+		$referer = wp_get_referer();
+		$redirect = ( $referer && false === strpos( $referer, wc_get_checkout_url() ) )
+			? $referer
+			: wc_get_page_permalink( 'shop' );
+		wp_send_json_success( array( 'redirect' => $redirect ) );
+	}
+
+	wp_send_json_success();
+}

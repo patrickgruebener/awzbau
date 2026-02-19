@@ -96,6 +96,87 @@
     display: none !important;
 }
 
+/* ============================================================
+   WooCommerce Checkout Layout
+   ============================================================ */
+
+/* Land-Feld ausblenden (immer DE, via Filter fixiert). */
+.woocommerce-checkout .billing_country_field {
+    display: none !important;
+}
+
+/* Auf Mobile: Bestellung vor dem Formular anzeigen. */
+@media (max-width: 768px) {
+    .woocommerce-checkout form.checkout {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .woocommerce-checkout #order_review_heading {
+        order: -2;
+    }
+
+    .woocommerce-checkout #order_review {
+        order: -1;
+        margin-bottom: 24px;
+    }
+
+    .woocommerce-checkout #customer_details {
+        order: 0;
+    }
+}
+
+/* Bearbeitbare Bestellübersicht: Qty-Controls und Remove-Button. */
+.awz-qty-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.awz-qty-minus,
+.awz-qty-plus {
+    background: #f0f4f2;
+    border: 1px solid #c8d5d0;
+    border-radius: 3px;
+    color: #33423b;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 7px;
+}
+
+.awz-qty-minus:hover,
+.awz-qty-plus:hover {
+    background: #639582;
+    border-color: #639582;
+    color: #fff;
+}
+
+.awz-qty-value {
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+.awz-remove-item {
+    color: #a0a0a0;
+    display: inline-block;
+    font-size: 18px;
+    line-height: 1;
+    margin-left: 8px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.awz-remove-item:hover {
+    color: #c0392b;
+}
+
+/* ============================================================
+   STEC Single Event (existing rules below)
+   ============================================================ */
+
 @media (max-width: 900px) {
     .single-stec_event .awz-stec-single-entry-content > .stec-single-page {
         max-width: 100%;
