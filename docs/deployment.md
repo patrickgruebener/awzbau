@@ -1,18 +1,25 @@
 # Deployment Workflow
 
-## Aktueller STEC Hotfix-Stand
+## Aktueller Stand: Commit `3ec52df` (2026-02-19)
 
-Vor naechstem Deployment bitte diese Handover-Doku lesen:
+Änderungen in diesem Stand:
+- Skip-Cart: Direktweiterleitung zur Kasse nach "Buchen"-Klick
+- Button-Text "In den Warenkorb" → "Buchen"
+- Fehlermeldung "Ticketverkauf" → "Lehrgangsbuchung"
+- `stec_allow_inprogress` im REST-Payload forciert
 
-- `docs/stec-booking-handover-2026-02-15.md`
+**FTP hochladen:**
+```
+wp-content/themes/vantage-childtheme/functions.php
+wp-content/themes/vantage-childtheme/assets/css/stec-single-legacy.css
+wp-content/themes/vantage-childtheme/inc/stec-booking-repair.php
+```
 
-Sie enthaelt:
-- komplette Fehlerhistorie
-- konkrete Code-Aenderungen
-- committen Stand (`4daf5c2`)
-- exakte FTP-Dateiliste
-- notwendige DB-Normalisierung fuer `stec_stop_before`
-- Live-Testcheckliste fuer Buchungen
+**DB-Fix auf Live ausführen** (phpMyAdmin, 3 Statements nacheinander):
+`docs/fix-allow-inprogress-complete.sql`
+→ Abschließendes SELECT muss 0 Zeilen zurückgeben.
+
+Für Vorgeschichte der Booking-Bugs: `docs/stec-booking-handover-2026-02-15.md`
 
 ## Server Info
 
