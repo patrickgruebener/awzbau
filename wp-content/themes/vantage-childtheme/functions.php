@@ -8,6 +8,14 @@ function vantage_child_enqueue_parent_style() {
 add_action( 'wp_enqueue_scripts', 'vantage_child_enqueue_parent_style', 8 );
 
 /**
+ * SVG favicon.
+ */
+add_action( 'wp_head', function () {
+    $uri = get_stylesheet_directory_uri() . '/assets/images/favicon.svg';
+    echo '<link rel="icon" type="image/svg+xml" href="' . esc_url( $uri ) . '">' . "\n";
+}, 1 );
+
+/**
  * Load child theme STEC helper modules.
  */
 $awz_stec_i18n_fallback = get_stylesheet_directory() . '/inc/stec-i18n-fallback.php';
