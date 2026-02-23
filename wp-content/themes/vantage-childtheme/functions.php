@@ -477,6 +477,9 @@ add_filter( 'pre_load_script_translations', function ( $translations, $file, $ha
 	$data['locale_data']['messages']['Add to cart']                                           = array( 'Buchen' );
 	$data['locale_data']['messages']["Event preview add to cart button text\x04Add to cart"] = array( 'Buchen' );
 
+	// Override "Angesagt" badge label → custom branding.
+	$data['locale_data']['messages']['Featured'] = array( 'Einzigartig in Deutschland' );
+
 	// Replace "Ticketverkauf" with "Lehrgangsbuchung" in all message strings.
 	foreach ( $data['locale_data']['messages'] as $key => $value ) {
 		if ( is_array( $value ) ) {
