@@ -1,5 +1,31 @@
 # Deployment Workflow
 
+## Aktueller Stand: Agenda-List-Layout + USP-Grid (2026-02-23)
+
+Änderungen in diesem Stand:
+
+1. STEC Kalender auf `/weiterbildung` zu Agenda-Listen-Ansicht umgebaut.
+2. CSS-Overrides: Datum-Badge, Monatsheader, Navigation ausgeblendet. Grüne Akzentlinie + Hover.
+3. `[awz_usp]` Shortcode: Icon-Karten-Grid mit Font Awesome (4 USPs).
+4. `awz-stec-performance.php`: end_date-Filterung via REST statt `filter__min_date` shortcode-Attribut.
+
+**FTP hochladen (dieser Stand):**
+```
+wp-content/mu-plugins/awz-stec-performance.php
+wp-content/themes/vantage-childtheme/functions.php
+wp-content/themes/vantage-childtheme/assets/css/stec-single-legacy.css
+```
+
+**Seite `/weiterbildung` im WP Admin:** Classic Editor → Text-Tab → Inhalt mit sauberem HTML (ohne SiteOrigin-Panel-Markup) ersetzen. Shortcodes `[stec]` und `[awz_usp]` verwenden.
+
+Hinweise:
+
+1. Nach Upload Cache leeren (Plugin/CDN/Browser).
+2. Kein DB-Fix erforderlich.
+3. USP-Texte in `functions.php` anpassen falls nötig (Array `$items` im `awz_usp`-Shortcode).
+
+---
+
 ## Aktueller Stand: STEC Performance + i18n Loader Fix (2026-02-19)
 
 Änderungen in diesem Stand:

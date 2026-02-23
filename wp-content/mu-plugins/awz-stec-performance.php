@@ -47,14 +47,10 @@ if ( ! function_exists( 'awz_stec_perf_is_weiterbildung_context' ) ) {
 	}
 }
 
-if ( ! function_exists( 'awz_stec_perf_get_date_range' ) ) {
-	function awz_stec_perf_get_date_range() {
+if ( ! function_exists( 'awz_stec_perf_today' ) ) {
+	function awz_stec_perf_today() {
 		$now = new DateTimeImmutable( 'now', wp_timezone() );
-
-		return array(
-			$now->setTime( 0, 0 )->format( 'Y-m-d\TH:i' ),
-			$now->modify( '+12 months' )->setTime( 23, 59 )->format( 'Y-m-d\TH:i' ),
-		);
+		return $now->setTime( 0, 0 )->format( 'Y-m-d\TH:i' );
 	}
 }
 
@@ -64,12 +60,11 @@ if ( ! function_exists( 'awz_stec_perf_filter_shortcode_atts' ) ) {
 			return $atts;
 		}
 
-		list( $min_date, $max_date ) = awz_stec_perf_get_date_range();
-
+		// No date filters here: end_date filtering is handled server-side in
+		// awz_stec_perf_rest_post_dispatch to correctly show long-running and
+		// in-progress courses (e.g. Meisterlehrgang running Jan–Dec 2027).
 		$atts['misc__events_per_request'] = 20;
 		$atts['misc__events_prefetch']    = false;
-		$atts['filter__min_date']         = $min_date;
-		$atts['filter__max_date']         = $max_date;
 
 		return $atts;
 	}
@@ -165,6 +160,24 @@ if ( ! function_exists( 'awz_stec_perf_rest_pre_dispatch' ) ) {
 }
 add_filter( 'rest_pre_dispatch', 'awz_stec_perf_rest_pre_dispatch', 10, 3 );
 
+if ( ! function_exists( 'awz_stec_perf_filter_events_by_end_date' ) ) {
+	function awz_stec_perf_filter_events_by_end_date( array $data ) {
+		$today = awz_stec_perf_today();
+
+		return array_values(
+			array_filter(
+				$data,
+				static function ( $event ) use ( $today ) {
+					if ( ! is_array( $event ) || ! isset( $event['end_date'] ) ) {
+						return true;
+					}
+					return $event['end_date'] >= $today;
+				}
+			)
+		);
+	}
+}
+
 if ( ! function_exists( 'awz_stec_perf_rest_post_dispatch' ) ) {
 	function awz_stec_perf_rest_post_dispatch( $result, $server, $request ) {
 		if ( ! awz_stec_perf_is_events_collection_request( $request ) || is_wp_error( $result ) ) {
@@ -178,6 +191,14 @@ if ( ! function_exists( 'awz_stec_perf_rest_post_dispatch' ) ) {
 
 		if ( 200 !== (int) $response->get_status() ) {
 			return $response;
+		}
+
+		// Filter out past events (end_date < today) before caching.
+		// This replaces the old filter__min_date shortcode param which incorrectly
+		// excluded in-progress courses by their start_date.
+		$data = $response->get_data();
+		if ( is_array( $data ) ) {
+			$response->set_data( awz_stec_perf_filter_events_by_end_date( $data ) );
 		}
 
 		$cache_payload = array(

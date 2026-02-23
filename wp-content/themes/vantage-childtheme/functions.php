@@ -140,11 +140,74 @@ if ( ! function_exists( 'awz_is_wc_booking_translation_context' ) ) {
 }
 
 /**
+ * Shortcode [awz_usp]: renders the USP grid on the Weiterbildung page.
+ * Uses Font Awesome icons (already loaded by STEC) for visual appeal.
+ * Shortcode bypasses wpautop which breaks flex layouts in the Classic Editor.
+ */
+add_shortcode( 'awz_usp', function () {
+	$items = array(
+		array(
+			'icon'  => 'fa-solid fa-award',
+			'title' => 'Anerkannte Abschlüsse',
+			'text'  => 'Zertifizierte Qualifikationen, die von Kammern und Arbeitgebern in der Bauwirtschaft anerkannt werden.',
+		),
+		array(
+			'icon'  => 'fa-solid fa-hand-holding-dollar',
+			'title' => 'Förderung möglich',
+			'text'  => 'Viele Lehrgänge sind über Aufstiegs-BAföG oder den Bildungscheck NRW finanziell förderbar.',
+		),
+		array(
+			'icon'  => 'fa-solid fa-helmet-safety',
+			'title' => 'Praxis statt Theorie',
+			'text'  => 'Speziell auf die Bauwirtschaft ausgerichtet – fachlich und methodisch fundiert.',
+		),
+		array(
+			'icon'  => 'fa-solid fa-people-group',
+			'title' => 'Erfahrene Referenten',
+			'text'  => 'Unsere Lehrkräfte kommen aus der Praxis und stehen auch nach dem Lehrgang mit Rat und Tat zur Seite.',
+		),
+	);
+
+	$html = '<div class="awz-usp-section">';
+	foreach ( $items as $item ) {
+		$html .= '<div class="awz-usp-item">'
+			. '<div class="awz-usp-icon"><i class="' . esc_attr( $item['icon'] ) . '"></i></div>'
+			. '<div class="awz-usp-title">' . esc_html( $item['title'] ) . '</div>'
+			. '<div class="awz-usp-desc">' . esc_html( $item['text'] ) . '</div>'
+			. '</div>';
+	}
+	$html .= '</div>';
+
+	return $html;
+} );
+
+/**
  * STEC v5: Open events on their single page instead of inline.
+ * Also: Force agenda list layout with minimal chrome (clean course list).
  */
 add_filter('stec_shortcode_atts', function ($atts) {
+    // Always open events on their single /lehrgang/ page.
     $atts['calendar__open_events_in'] = 'single';
-    $atts['calendar__links_target'] = '_self';
+    $atts['calendar__links_target']   = '_self';
+
+    // Agenda list layout: disable calendar navigation chrome.
+    $atts['calendar__layout']                  = 'agenda';
+    $atts['calendar__layouts']                 = 'agenda';
+    $atts['calendar__top_today_button']        = false;
+    $atts['calendar__top_nav_buttons']         = false;
+    $atts['calendar__top_datepicker_menu']     = false;
+    $atts['calendar__top_search_menu']         = false;
+    $atts['calendar__top_filters_menu']        = false;
+    $atts['calendar__top_layouts_menu']        = false;
+    $atts['calendar__top_inline_categories']   = false;
+
+    // Show all upcoming events as a flat, unpaginated list.
+    $atts['layouts__agenda_list_unbound']      = true;
+    $atts['layouts__agenda_list_limit']        = 50;
+    $atts['layouts__agenda_list_more_button']  = false;
+    $atts['layouts__agenda_list_next_button']  = false;
+    $atts['layouts__agenda_list_months_ahead'] = 12;
+
     return $atts;
 });
 
@@ -232,6 +295,23 @@ function awz_wc_booking_gettext_fallback_de( $translation, $text, $domain ) {
 	return $translation;
 }
 add_filter( 'gettext', 'awz_wc_booking_gettext_fallback_de', 20, 3 );
+
+/**
+ * Fix payment gateway description: "Bei Lehrgangsbeginn" → "vor Lehrgangsbeginn".
+ * The text is stored in the DB (gateway settings), so gettext won't catch it.
+ */
+add_filter( 'woocommerce_available_payment_gateways', function ( $gateways ) {
+	foreach ( $gateways as $gateway ) {
+		if ( false !== strpos( $gateway->description, 'Bei Lehrgangsbeginn' ) ) {
+			$gateway->description = str_replace(
+				'Bei Lehrgangsbeginn',
+				'vor Lehrgangsbeginn',
+				$gateway->description
+			);
+		}
+	}
+	return $gateways;
+} );
 
 /**
  * Disable STEC QR-code generation globally.
