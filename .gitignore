@@ -9,6 +9,11 @@
 !docker-compose.yml
 !/wp-content/
 
+# Allow .claude/memory.md (project memory log)
+!/.claude/
+/.claude/*
+!/.claude/memory.md
+
 # Ignore everything in wp-content
 /wp-content/*
 /wp-content/*/
@@ -25,6 +30,7 @@
 /wp-content/mu-plugins/*
 !/wp-content/mu-plugins/awz-stec-performance.php
 !/wp-content/mu-plugins/awz-stec-i18n-loader-hotfix.php
+!/wp-content/mu-plugins/awz-cf7-antispam.php
 
 # Ignore uploads and cache
 wp-content/uploads/
