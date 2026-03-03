@@ -382,14 +382,21 @@
     align-items: center;
     gap: 16px;
     padding: 48px 0;
-    font-size: 0;
-    color: transparent;
     min-height: 80px;
 }
 
-/* Hide the internal sprite/icon */
+/* Hide STEC's own sprite (needs !important to beat plugin CSS) */
 .stec .stec-calendar-preloader .stec-loader-calendar-sprite {
-    display: none;
+    display: none !important;
+}
+
+/* Hide "Kalender wird geladen" – STEC sets an inline color style on this
+   span, so !important is required to override it */
+.stec .stec-calendar-preloader > span:last-child,
+.stec .stec-calendar-preloader > stec-span:last-child {
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
 }
 
 /* Animated spinner ring */
@@ -405,7 +412,7 @@
     flex-shrink: 0;
 }
 
-/* Custom loading text */
+/* Custom loading text below spinner */
 .stec .stec-calendar-preloader::after {
     content: 'Lehrgänge werden geladen';
     display: block;
