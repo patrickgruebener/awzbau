@@ -245,6 +245,7 @@ add_filter( 'stec_event_controller_get_items', function ( $items, $request ) {
     if ( empty( $data ) || ! is_array( $data ) || ! isset( $data[0]['id'] ) ) {
         return $items;
     }
+    update_postmeta_cache( array_column( $data, 'id' ) );
     foreach ( $data as &$event ) {
         $event['awz_sort_order'] = (int) get_post_meta( $event['id'], '_awz_sort_order', true );
     }
@@ -267,7 +268,7 @@ add_action( 'wp_footer', function () {
     <script>
     window.stecFilterGetWorkerEventsBetween = function (events) {
         var pinned = events.filter(function (e) { return e.awz_sort_order > 0; });
-        var rest   = events.filter(function (e) { return !e.awz_sort_order || e.awz_sort_order <= 0; });
+        var rest   = events.filter(function (e) { return !(e.awz_sort_order > 0); });
         pinned.sort(function (a, b) { return a.awz_sort_order - b.awz_sort_order; });
         return pinned.concat(rest);
     };

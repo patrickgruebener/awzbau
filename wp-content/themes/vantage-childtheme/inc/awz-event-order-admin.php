@@ -24,7 +24,10 @@ function awz_render_event_order_page() {
 			? $_POST['awz_order']
 			: array();
 		foreach ( $orders as $post_id => $value ) {
-			update_post_meta( (int) $post_id, '_awz_sort_order', absint( $value ) );
+			$post_id = (int) $post_id;
+			if ( 'stec_event' === get_post_type( $post_id ) ) {
+				update_post_meta( $post_id, '_awz_sort_order', absint( $value ) );
+			}
 		}
 		echo '<div class="notice notice-success is-dismissible"><p><strong>Reihenfolge gespeichert.</strong></p></div>';
 	}
