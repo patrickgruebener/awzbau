@@ -28,6 +28,11 @@ if ( file_exists( $awz_stec_booking_repair ) ) {
 	require_once $awz_stec_booking_repair;
 }
 
+$awz_event_order_admin = get_stylesheet_directory() . '/inc/awz-event-order-admin.php';
+if ( file_exists( $awz_event_order_admin ) ) {
+	require_once $awz_event_order_admin;
+}
+
 if ( ! function_exists( 'awz_is_frontend_non_admin_request' ) ) {
 	/**
 	 * Restrict expensive translation filters to frontend traffic.
@@ -225,6 +230,50 @@ add_filter('stec_default_settings', function ($settings) {
     $settings['booking']['allow_inprogress'] = 1;
     return $settings;
 });
+
+/**
+ * STEC v5: Inject sort order (post meta _awz_sort_order) into event REST response.
+ * Enables client-side re-sort via stecFilterGetWorkerEventsBetween.
+ * Wina sets the value via the "Anzeigereihenfolge" meta box in the event editor.
+ * Default is 0 (no pinning). Values > 0 appear first, sorted ascending.
+ */
+add_filter( 'stec_event_controller_get_items', function ( $items, $request ) {
+    if ( 'edit' === $request->get_param( 'context' ) ) {
+        return $items;
+    }
+    $data = $items->get_data();
+    if ( empty( $data ) || ! is_array( $data ) || ! isset( $data[0]['id'] ) ) {
+        return $items;
+    }
+    foreach ( $data as &$event ) {
+        $event['awz_sort_order'] = (int) get_post_meta( $event['id'], '_awz_sort_order', true );
+    }
+    unset( $event );
+    $items->set_data( $data );
+    return $items;
+}, 10, 2 );
+
+/**
+ * STEC v5: Re-sort agenda events by awz_sort_order on /weiterbildung.
+ * Events with awz_sort_order > 0 are pinned to the top (ascending by value).
+ * All other events follow in default chronological order.
+ * Runs inside the STEC web worker after the default start-date sort.
+ */
+add_action( 'wp_footer', function () {
+    if ( ! is_page( 'weiterbildung' ) ) {
+        return;
+    }
+    ?>
+    <script>
+    window.stecFilterGetWorkerEventsBetween = function (events) {
+        var pinned = events.filter(function (e) { return e.awz_sort_order > 0; });
+        var rest   = events.filter(function (e) { return !e.awz_sort_order || e.awz_sort_order <= 0; });
+        pinned.sort(function (a, b) { return a.awz_sort_order - b.awz_sort_order; });
+        return pinned.concat(rest);
+    };
+    </script>
+    <?php
+}, 5 );
 
 /**
  * STEC ticket CTA label and error messages on event pages.
