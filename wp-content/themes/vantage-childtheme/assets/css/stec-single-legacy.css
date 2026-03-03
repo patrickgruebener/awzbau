@@ -96,6 +96,12 @@
     display: none !important;
 }
 
+/* Hide the share/social row and RSVP "Teilnehmen" subscribe button on single event pages.
+   Container .stec-event-share-and-export wraps both: social sharing links + the subscribe button. */
+.single-stec_event .stec-event-share-and-export {
+    display: none !important;
+}
+
 /* ============================================================
    WooCommerce Checkout Layout
    ============================================================ */
@@ -213,6 +219,9 @@
 /* Hide the "Veranstaltung einrichten" submit button (admin action via WP Admin) */
 .stec .stec-submit-event { display: none !important; }
 
+/* Hide RSVP "Teilnehmen" button in event preview list (AWZ uses WooCommerce, not STEC RSVP) */
+.stec .stec-event-preview-aside-rsvp { display: none !important; }
+
 /* Full-width content after thumbnail is removed */
 .stec .stec-event-preview-content { width: 100% !important; }
 
@@ -295,13 +304,14 @@
 .awz-usp-section {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 24px;
     margin: 48px 0 40px;
     padding: 0;
 }
 
 .awz-usp-item {
-    flex: 1 1 calc(25% - 18px);
+    flex: 0 1 calc(33.333% - 16px);
     min-width: 180px;
     text-align: center;
     padding: 28px 16px 24px;
@@ -356,4 +366,55 @@
 @media (max-width: 480px) {
     .awz-usp-item { flex: 1 1 100%; }
     .awz-usp-section { gap: 16px; margin: 32px 0 28px; }
+}
+
+/* ===================================================
+   STEC Calendar Loading Spinner
+   Replaces "Kalender wird geladen" text with an
+   animated CSS spinner in AWZ green.
+   Selector verified: .stec-calendar-preloader (STEC v5)
+   =================================================== */
+
+.stec .stec-calendar-preloader {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 48px 0;
+    font-size: 0;
+    color: transparent;
+    min-height: 80px;
+}
+
+/* Hide the internal sprite/icon */
+.stec .stec-calendar-preloader .stec-loader-calendar-sprite {
+    display: none;
+}
+
+/* Animated spinner ring */
+.stec .stec-calendar-preloader::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 36px;
+    border: 3px solid #e2e8e5;
+    border-top-color: #639582;
+    border-radius: 50%;
+    animation: awz-spin 0.8s linear infinite;
+    flex-shrink: 0;
+}
+
+/* Custom loading text */
+.stec .stec-calendar-preloader::after {
+    content: 'Lehrgänge werden geladen';
+    display: block;
+    font-size: 14px;
+    color: #5a6e68;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+}
+
+@keyframes awz-spin {
+    to { transform: rotate(360deg); }
 }

@@ -158,13 +158,18 @@ add_shortcode( 'awz_usp', function () {
 		),
 		array(
 			'icon'  => 'fa-solid fa-helmet-safety',
-			'title' => 'Praxis statt Theorie',
+			'title' => 'Theorie und Praxis',
 			'text'  => 'Speziell auf die Bauwirtschaft ausgerichtet – fachlich und methodisch fundiert.',
 		),
 		array(
 			'icon'  => 'fa-solid fa-people-group',
-			'title' => 'Erfahrene Referenten',
-			'text'  => 'Unsere Lehrkräfte kommen aus der Praxis und stehen auch nach dem Lehrgang mit Rat und Tat zur Seite.',
+			'title' => 'Erfahrene Dozent*innen',
+			'text'  => 'Unsere Dozent*innen kommen aus der Praxis, sind Professor*innen und Dozent*innen der Universität Siegen, Ingenieur*innen des Landesbetrieb Straßen NRW, Meister*innen des AWZ Bau und erfahrene Führungskräfte der Bauwirtschaft.',
+		),
+		array(
+			'icon'  => 'fa-solid fa-compass',
+			'title' => 'AWZ-Bildungskompass',
+			'text'  => 'Ganz egal wann und wo Sie lernen möchten – der AWZ-Bildungskompass ist unsere digitale Lernplattform und ermöglicht Ihnen ein flexibles, ortsunabhängiges Zugreifen auf Unterlagen der Lehrgänge.',
 		),
 	);
 
