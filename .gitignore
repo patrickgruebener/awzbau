@@ -31,6 +31,7 @@
 !/wp-content/mu-plugins/awz-stec-performance.php
 !/wp-content/mu-plugins/awz-stec-i18n-loader-hotfix.php
 !/wp-content/mu-plugins/awz-cf7-antispam.php
+!/wp-content/mu-plugins/awz-admin-menu.php
 
 # Ignore uploads and cache
 wp-content/uploads/
@@ -50,6 +51,7 @@ wp-config.php
 
 # Allow structure folders
 !/docs/
+!/tasks/
 !/tests/
 /tests/*
 !/tests/manual/
