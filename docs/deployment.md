@@ -1,5 +1,46 @@
 # Deployment Workflow
 
+## Aktueller Stand: CF7 Anti-Spam verschaerft (2026-06-03)
+
+Winas bestaetigter Formular-Spam vom 29.05.2026 enthaelt mehrere HTML-Links, Spam-Domains und kyrillisch bzw. mojibake-artigen Text.
+
+**FTP hochladen:**
+```
+wp-content/mu-plugins/awz-cf7-antispam.php
+```
+
+Hinweise:
+
+1. Vor Upload die bestehende Live-Datei `wp-content/mu-plugins/awz-cf7-antispam.php` sichern.
+2. Ordner `wp-content/mu-plugins/` muss auf Live existieren, sonst zuerst anlegen.
+3. Nach Upload sollte die Datei im WP-Admin unter "Must-Use Plugins" als "AWZ Anti-Spam" sichtbar sein.
+4. Contact Form 7 blockt serverseitig Nicht-E-Mail-Textfelder mit HTML, URLs oder fremden Schriftsystemen.
+5. Erwartete Formularmeldung bei Blockierung: "Ihre Nachricht enthält Links, HTML oder nicht erlaubte Zeichen. Bitte entfernen Sie diese Inhalte und senden Sie das Formular erneut."
+6. Kommentare/Pings bleiben global geschlossen; bestehende Blocklist- und Kommentar-Spam-Regeln bleiben erhalten.
+
+---
+
+## Stand: Anti-Spam fuer Formular + Kommentare (2026-05-26)
+
+Winas Spam-Beispiele vom 26.05.2026 zeigen zwei Quellen:
+
+1. Contact Form 7 Formular-Spam mit kyrillischem Text und Spam-Links.
+2. WordPress-Kommentar-Spam mit Moderationsmails.
+
+**FTP hochladen:**
+```
+wp-content/mu-plugins/awz-cf7-antispam.php
+```
+
+Hinweise:
+
+1. Ordner `wp-content/mu-plugins/` muss auf Live existieren, sonst zuerst anlegen.
+2. Nach Upload sollte die Datei im WP-Admin unter "Must-Use Plugins" als "AWZ Anti-Spam" sichtbar sein.
+3. Kommentare/Pings werden global geschlossen; CF7-Spam wird serverseitig vor dem Mailversand geblockt.
+4. Im WP-Admin unter Kommentare die wartenden Spam-Kommentare loeschen bzw. als Spam markieren.
+
+---
+
 ## Aktueller Stand: Agenda-List-Layout + USP-Grid (2026-02-23)
 
 Änderungen in diesem Stand:

@@ -19,6 +19,16 @@ Pflichtcheck nach jedem FTP-Deployment auf www.awz-bau.de.
 - [ ] Event-Klick öffnet Einzelseite unter `/lehrgang/[slug]/`
 - [ ] Network-Tab auf STEC-Seiten: keine `stec-de_DE-*.json` 404 Kette
 
+## Kontaktformular & Anti-Spam
+
+- [ ] Kontaktformular mit legitimer Nachricht absenden: `Guten Tag, ich interessiere mich für eine Weiterbildung und bitte um Rückruf.` → Formular wird akzeptiert
+- [ ] HTML-Test absenden: `<a href="https://example.com">Test</a>` → Formular wird blockiert
+- [ ] URL-Test absenden: `Bitte schauen Sie auf https://example.com` → Formular wird blockiert
+- [ ] Fremdschrift-Test absenden: `Смотреть аниме` → Formular wird blockiert
+- [ ] Deutsch-Sonderzeichen-Test absenden: `Straße, Prüfung, Grüße, 50 %, Rückruf bitte.` → wird nicht wegen Anti-Spam blockiert
+- [ ] Blockierte Tests zeigen die Meldung: `Ihre Nachricht enthält Links, HTML oder nicht erlaubte Zeichen. Bitte entfernen Sie diese Inhalte und senden Sie das Formular erneut.`
+- [ ] Prüfen, dass blockierte URL/HTML/Fremdschrift-Tests nicht als Mail bei AWZ/Wina ankommen
+
 ## Buchungsflow (Kernfunktion)
 
 - [ ] Beliebige Event-Seite aufrufen
