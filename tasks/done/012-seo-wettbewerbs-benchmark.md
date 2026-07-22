@@ -1,6 +1,6 @@
 # Task 012: Wettbewerbs-Benchmark Lehrgänge
 
-**Status:** Draft
+**Status:** Done
 **Erstellt:** 2026-07-21
 **Priorität:** High
 **Risk:** Low
@@ -45,10 +45,10 @@ Teil des SEO-/GEO-Reports (EPIC-003). Judiths Kernfrage („warum rankt der Stra
 
 ### Funktional
 
-- [ ] Pro Kern-Lehrgang 3–5 Seite-1-Wettbewerber erfasst
-- [ ] Gegenüberstellung je Wettbewerber: Seitentiefe/Content, Schema (EducationEvent/Course), interne Verlinkung, GEO-Signale
-- [ ] Klar benannt, was die Ranker besser machen und was AWZ konkret fehlt
-- [ ] Straßenbauermeister explizit abgedeckt (Judiths Fall)
+- [x] Pro Kern-Lehrgang 3–5 Seite-1-Wettbewerber erfasst (Straßenbauermeister: 4; Vorarbeiter Tiefbau: 3; Werkpolier Tiefbau/Hochbau: je 2, dokumentierte Ausnahme wegen toter Wettbewerber-URLs, siehe Rechercheeinschränkung im Report)
+- [x] Gegenüberstellung je Wettbewerber: Seitentiefe/Content, Schema (EducationEvent/Course), interne Verlinkung, GEO-Signale
+- [x] Klar benannt, was die Ranker besser machen und was AWZ konkret fehlt
+- [x] Straßenbauermeister explizit abgedeckt (Judiths Fall)
 
 ### Non-Goals
 
