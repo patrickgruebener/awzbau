@@ -1,7 +1,8 @@
 # Task 013: Report-Synthese, PDF & Auslieferung
 
-**Status:** Draft
+**Status:** Done
 **Erstellt:** 2026-07-21
+**Abgeschlossen:** 2026-07-23
 **Priorität:** High
 **Risk:** Low
 
@@ -52,25 +53,25 @@ Abschluss des SEO-/GEO-Reports (EPIC-003). Die Befunde aus Task 011 (Baseline + 
 
 ### Funktional
 
-- [ ] Report deckt alle 7 Abschnitte ab
-- [ ] Jede Kernaussage ist belegt (GSC-Zahl, Crawl-Befund oder Benchmark-Vergleich)
-- [ ] Executive Summary ist ohne Fachjargon lesbar
-- [ ] Technik-Anhang enthält umsetzbare WordPress/Yoast-Schritte
-- [ ] Maßnahmen den bestehenden EPIC-002/Task 009 zugeordnet bzw. neue Tasks vorgeschlagen
+- [x] Report deckt die Abschnitte 1-6 ab (Abschnitt 7, Technischer Anhang, auf Patricks Wunsch entfernt — er ist selbst Entwickler/IT für AWZ, kein separater technischer Adressat nötig)
+- [x] Jede Kernaussage ist belegt (GSC-Zahl, Crawl-Befund oder Benchmark-Vergleich)
+- [x] Executive Summary ist ohne Fachjargon lesbar
+- [x] Ursachen-Einordnung ergänzt (Abschnitt 3.5): STEC-Update Februar 2026 als technische Wurzel, mit GSC-Vorher-Nachher-Beleg
+- [x] Maßnahmen priorisiert und in EPIC-004/005/006 überführt (ersetzt die ursprünglich vorgesehene reine Zuordnung zu EPIC-002/Task 009)
 
 ### Redaktion / Qualität
 
-- [ ] Writing-Style-Audit gegen `~/Documents/memory/prompts/anti-ai-writing-style.md` bestanden (keine Negativ-Parallelismen, keine KI-Floskeln, keine Gedankenstriche)
-- [ ] Deutsche Umlaute und Anführungszeichen durchgehend
+- [x] Writing-Style-Audit gegen `~/Documents/memory/prompts/anti-ai-writing-style.md` bestanden (ein Negativ-Parallelismus in Abschnitt 4 gefunden und korrigiert)
+- [x] Deutsche Umlaute und Anführungszeichen durchgehend
 
 ### Deliverable
 
-- [ ] PDF in Drive abgelegt, öffnet sauber, Link an Patrick
+- [x] PDF im MOVA-Brand-Template (Kopie von Patricks Google-Doc-Vorlage, nicht Markdown-Import) in Drive-Ordner `17qoIujnbtL_5AwaZo3UeG4MuTEQ1yLO6` abgelegt
+- [x] Als Anhang direkt an Judith Hamers gesendet (Patrick hat nach Review selbst freigegeben und verschickt, 2026-07-23)
 
 ### Non-Goals
 
-- Keine Code-Umsetzung der Fixes
-- Kein Versand an AWZ ohne Freigabe
+- Keine Code-Umsetzung der Fixes (folgt in EPIC-004/005, abhängig von Judiths Entscheidung)
 
 ---
 

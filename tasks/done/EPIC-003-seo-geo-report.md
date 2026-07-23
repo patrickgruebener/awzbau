@@ -1,7 +1,8 @@
 # Epic 003: SEO- & GEO-Report für AWZ Bau
 
-**Status:** Draft
+**Status:** Done
 **Erstellt:** 2026-07-21
+**Abgeschlossen:** 2026-07-23
 **Priorität:** High
 **Risk:** Low
 
@@ -52,13 +53,15 @@ Arbeitsverzeichnis für Roh-Outputs und Report-Markdown: `seo-report-2026-07/` i
 
 ## Acceptance Criteria
 
-- [ ] SEO- und GEO-Baseline erhoben (Health Score + GEO Score liegen vor)
-- [ ] GSC-Exporte eingearbeitet, echte Positionen für Straßenbauermeister dokumentiert
-- [ ] Wettbewerbs-Benchmark für die Kern-Lehrgänge erstellt
-- [ ] Entscheider-Report mit Technik-Anhang geschrieben, jede Kernaussage belegt
-- [ ] Writing-Style-Audit gegen `anti-ai-writing-style.md` bestanden
-- [ ] PDF in Drive abgelegt, Link an Patrick, sauber lesbar
-- [ ] Maßnahmen den bestehenden EPIC-002/Task 009 zugeordnet bzw. neue Tasks vorgeschlagen
+- [x] SEO- und GEO-Baseline erhoben (Health Score ~49/100, GEO Score 31/100)
+- [x] GSC-Exporte eingearbeitet, echte Positionen für Straßenbauermeister dokumentiert
+- [x] Wettbewerbs-Benchmark für die Kern-Lehrgänge erstellt (6 Anbieter)
+- [x] Entscheider-Report geschrieben, jede Kernaussage belegt (Technik-Anhang auf Patricks Wunsch entfernt, er ist selbst IT/Entwickler)
+- [x] Writing-Style-Audit gegen `anti-ai-writing-style.md` bestanden
+- [x] PDF im MOVA-Brand-Template in Drive abgelegt, direkt an Judith Hamers gesendet (2026-07-23)
+- [x] Maßnahmen in EPIC-004 (primär, Judith als "Epic 1" angeboten), EPIC-005 (Add-on, "Epic 2") und EPIC-006 (Backlog) überführt
+
+**Ergebnis:** Kernbefund war fundamentaler als die ursprüngliche EPIC-002-Hypothese: Der Kurstext fehlt im Server-HTML aller 24 Lehrgangsseiten (STEC v5 lädt clientseitig nach), verursacht durch die STEC-v3→v5-Migration vom 14.02.2026. Machbarkeit eines Child-Theme-Fixes ohne Plugin-Änderung verifiziert (Hook `stec_single_after_content` + `Events::get_rest_event()`). Judith hat den Bericht mit Stundenschätzung für Epic 1 (7-12h) und Epic 2 (4-6h) erhalten, Entscheidung steht aus.
 
 ### Non-Goals
 
